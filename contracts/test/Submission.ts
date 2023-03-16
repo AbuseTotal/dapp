@@ -1,32 +1,25 @@
-import Web3 from "web3";
-import assert from "assert";
 import { ethers } from "hardhat";
 import { expect } from "chai";
 
-describe.only("Reporting", function () {
+describe.only("Submission", function () {
   const deployContract = async () => {
     const [owner, otherAccount] = await ethers.getSigners();
-    const Reporting = await ethers.getContractFactory("Reporting");
-    const reporting = await Reporting.deploy();
+    const Submission = await ethers.getContractFactory("Submission");
+    const submission = await Submission.deploy();
 
-    return { owner, otherAccount, reporting };
+    return { owner, otherAccount, submission };
   };
 
-  it("should submit a URL and update reports and reporter balance", async function () {
-    const { owner, otherAccount, reporting } = await deployContract();
-
-    const initialBalanceWei = await reporting.getReputation(
-      otherAccount.address
-    );
-
+  it("should submit a URL, update reports and reporter balance", async function () {
+    
     const url = "https://example.com";
-    const { hash } = await reporting.connect(otherAccount).submitUrl(url);
+    const { owner, otherAccount, submission } = await deployContract();
 
-    const updatedbalanceWei = await reporting.getReputation(
-      otherAccount.address
-    );
+    const initialBalanceWei = await submission.getReputation(otherAccount.address);
+    const { hash } = await submission.connect(otherAccount).submitUrl(url);
 
-    const report = await reporting.getReport(url);
+    const updatedbalanceWei = await submission.getReputation(otherAccount.address);
+    const report = await submission.getReport(url);
 
     expect(report).to.exist;
     expect(report).contains(otherAccount.address);
