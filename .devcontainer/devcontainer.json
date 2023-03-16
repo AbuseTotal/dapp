@@ -1,0 +1,93 @@
+{
+  "name": "Workbench",
+  "remoteUser": "vscode",
+  "shutdownAction": "stopContainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "",
+  "workspaceFolder": "/abusetotal",
+  "workspaceMount": "source=${localWorkspaceFolder}/,target=/abusetotal,type=bind,consistency=cached",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+		"ms-azuretools.vscode-docker",
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"dsznajder.es7-react-js-snippets",
+		"bierner.markdown-mermaid",
+		"ms-python.python",
+		"ms-python.vscode-pylance",
+		"ms-python.isort",
+		"ms-python.black-formatter",
+		"yzhang.markdown-all-in-one",
+		"ms-vsliveshare.vsliveshare",
+		"eamodio.gitlens"
+	],
+      "settings": {
+        "files.eol": "\n",
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        },
+        "eslint.format.enable": true,
+        "eslint.validate": [
+          "javascript",
+          "typescript",
+          "typescriptreact"
+        ],
+        "python.analysis.autoImportCompletions": true,
+        "python.defaultInterpreterPath": "/home/vscode/.cache/pypoetry/virtualenvs/abusetotal-oOelvCEZ-py3.10/bin/python",
+        "python.venvFolders": [
+          "/abusetotal/backend/.venv"
+        ],
+        "python.formatting.provider": "none",
+        "black-formatter.path": ["/home/vscode/.cache/pypoetry/virtualenvs/abusetotal-oOelvCEZ-py3.10/bin/black"],
+        "black-formatter.args": [
+          "--config",
+          "/abusetotal/backend/pyproject.toml"
+        ],
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+          }
+        },
+        "isort.path": [
+          "/home/vscode/.cache/pypoetry/virtualenvs/abusetotal-oOelvCEZ-py3.10/bin/isort"
+        ],
+        "isort.args": [
+          "--settings-file",
+          "/abusetotal/backend/pyproject.toml"
+        ],
+        "python.linting.lintOnSave": true,
+        "python.linting.flake8Enabled": true,
+        "python.linting.flake8Path": "/home/vscode/.cache/pypoetry/virtualenvs/abusetotal-oOelvCEZ-py3.10/bin/flake8p",
+        "python.linting.flake8Args": [
+          "--toml-config",
+          "/abusetotal/backend/pyproject.toml"
+        ],
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [
+            "backend"
+        ]
+      }
+    }
+  }
+}
