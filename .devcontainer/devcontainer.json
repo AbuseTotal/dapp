@@ -25,7 +25,8 @@
 		"ms-python.black-formatter",
 		"yzhang.markdown-all-in-one",
 		"ms-vsliveshare.vsliveshare",
-		"eamodio.gitlens"
+		"eamodio.gitlens",
+		"NomicFoundation.hardhat-solidity"
 	],
       "settings": {
         "files.eol": "\n",
