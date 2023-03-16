@@ -37,3 +37,14 @@ contract Submission {
         return reputations[account];
     }
 }
+
+contract Bounty {
+
+    Submission submissionContract;
+
+    function createBounty(string calldata url, uint bountyValue) public payable {
+        submissionContract.reports[url]
+        .bounty += bountyValue;
+    }
+
+}
