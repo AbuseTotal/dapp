@@ -4,14 +4,19 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Reputation is ERC20, Ownable {
+    event Minted(address indexed to, uint256 amount);
+    event Burned(address indexed from, uint256 amount);
+
     constructor() ERC20("ReputationToken", "RT") {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
+        emit Minted(to, amount);
     }
 
     function burn(address from, uint256 amount) public onlyOwner {
         _burn(from, amount);
+        emit Burned(from, amount);
     }
 
     function transfer(address, uint256) public pure override returns (bool) {

@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Bounty is ERC20, Ownable {
     mapping(address => uint256) private bounties;
 
+    event BountySubmitted(address indexed user, uint256 amount);
+    event BountyClaimed(address indexed user, uint256 amount);
+
     constructor() ERC20("BountyToken", "BT") {
         // Grant initial supply to the contract owner
         _mint(msg.sender, 1000000 * 10**decimals());
@@ -14,6 +17,7 @@ contract Bounty is ERC20, Ownable {
     function submitBounty(address user, uint256 amount) external onlyOwner {
         require(amount > 0, "Bounty: amount must be greater than 0");
         bounties[user] = amount;
+        emit BountySubmitted(user, amount);
     }
 
     function claimBounty(address user) external {
@@ -24,5 +28,6 @@ contract Bounty is ERC20, Ownable {
         bounties[user] = 0;
 
         _mint(user, bountyAmount);
+        emit BountyClaimed(user, bountyAmount);
     }
 }
