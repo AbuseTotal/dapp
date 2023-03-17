@@ -1,3 +1,14 @@
+![AbuseTotal Logo](https://user-images.githubusercontent.com/4184292/206514580-e6e0215d-1134-40b8-814f-3e575000dde8.png)
+
+## SmartContracts
+
+```
+cd contracts/
+npm install
+npx hardhat node
+npx hardhat test --network localhost
+```
+
 ## LayerX Web3 Boiler Plate Project
 This boilerplate project with  Nextjs + dappKit + Rocket Kit could be used as a starting point
 
