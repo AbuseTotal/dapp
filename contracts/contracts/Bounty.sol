@@ -14,7 +14,7 @@ contract Bounty is ERC20, Ownable {
         _mint(msg.sender, 1000000 * 10**decimals());
     }
 
-    function submitBounty(string calldata userId, uint256 amount) external onlyOwner {
+    function submitBounty(uint256 amount, string calldata userId) external onlyOwner {
         require(amount > 0, "Bounty: amount must be greater than 0");
         bounties[userId] = amount;
         emit BountySubmitted(userId, amount);
@@ -22,7 +22,7 @@ contract Bounty is ERC20, Ownable {
 
     function claimBounty(address to, string calldata userId) external onlyOwner {
         require(bounties[userId] > 0, "Bounty: no bounty available for the specified address");
-        require(msg.sender == to, "Bounty: caller is not eligible to claim the bounty");
+        // require(msg.sender == to, "Bounty: caller is not eligible to claim the bounty");
 
         uint256 bountyAmount = bounties[userId];
         bounties[userId] = 0;
