@@ -8,7 +8,7 @@ enum ChainName {
 }
 
 export enum ChainId {
-  LOCAL = 1337,
+  LOCAL = 31337,
   ETHEREUM = 1, 
   RINKEBY = 4,
   GOERLI = 5,
