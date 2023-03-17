@@ -1,4 +1,5 @@
-import Image from 'next/image';
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import NextLink from 'next/link';
 import {
@@ -18,44 +19,57 @@ import {
   Link,
   Button,
 } from '@chakra-ui/react';
-import { Formik, FormikProps } from 'formik';
 import { AbiItem } from 'web3-utils';
-
-import useMetaMaskOnboarding from '@/hooks/useMetaMaskOnboarding';
-import { useWeb3 } from '@/hooks/useWeb3';
-import useAddress from '@/hooks/useAddress';
-import Logo from '@/components/Logo';
-import { ConnectorList, Warning, Connector, Alert, Agreement, AddressStyle } from '../styles/web3';
-import SubmissionContractABI from '@/abis/Submission.json';
-import { ZkConnectButton, ZkConnectResponse } from '@sismo-core/zk-connect-react';
-import Web3 from 'web3';
+import { Formik, FormikProps } from "formik";
 import axios from 'axios';
+
+import useMetaMaskOnboarding from "@/hooks/useMetaMaskOnboarding";
+import { useWeb3 } from "@/hooks/useWeb3";
+import useAddress from "@/hooks/useAddress";
+import Logo from "@/components/Logo";
+import { ConnectorList,Warning, Connector, Alert,  Agreement, AddressStyle}  from "../styles/web3"
+import SubmissionContractABI from "@/abis/Submission.json";
+import { EventData } from "web3-eth-contract";
+import SubmissionLiveFeed from "@/components/SubmissionLiveFeed";
+import {ZkConnectButton, ZkConnectResponse} from "@sismo-core/zk-connect-react";
+
 
 type Form = {
   observable: string;
 };
 
-const ShowEthAddress = () => {
-  const { address = '' } = useAddress();
-  return <AddressStyle>{address}</AddressStyle>;
-};
+const minifyAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+const ShowEthAddress = ()=> {
+  const { address = "" } = useAddress();
+  return (
+    <AddressStyle>
+      {address}
+  </AddressStyle>
+  );
+}
 
 interface OnActionClick {
   onClick: () => void;
 }
 
-const ClickableEthAddress = ({ onClick }: OnActionClick) => {
-  const { address = '' } = useAddress();
-  return (
-    <Button size="md" onClick={onClick}>
-      {address && `${address.slice(0, 6)}...${address.slice(-4)}`}
-    </Button>
-  );
-};
+const ClickableEthAddress = ({ onClick }: OnActionClick)=> {
+    const { address = "" } = useAddress(); return (
+      <Button 
+        size="md"
+        onClick={onClick}
+        >      
+          {address && minifyAddress(address)}
+        </Button>
+    );
+  }
 
-function Submit() {
+function Home() {
   const { connected, connect, disconnect, getConnection } = useWeb3();
   const { isMetaMaskInstalled, startOnboarding } = useMetaMaskOnboarding();
+  const [pastEvents, setPastEvents] = useState<EventData[]>();
 
   const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
 
@@ -76,6 +90,17 @@ function Submit() {
     disconnect();
     onModalClose();
   };
+
+  useEffect(() => {
+    if (!connected) { return };
+
+    const connection = getConnection();
+    const contract = new connection.Web3.eth.Contract(
+      SubmissionContractABI as AbiItem[],
+      process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
+    );
+    contract.getPastEvents("URLSubmitted", { fromBlock: 0 }).then(events => setPastEvents(events));
+  }, [getConnection, connected])
 
   return (
     <Flex height="100vh" direction="column" bg="white">
@@ -164,6 +189,9 @@ function Submit() {
             )}
           </Formik>
         </Container>
+        <Box mt={12}>
+          <SubmissionLiveFeed />
+        </Box>
       </Flex>
 
       <Modal isOpen={isModalOpen} onClose={onModalClose} size="xl">
@@ -228,4 +256,4 @@ function Submit() {
   );
 }
 
-export default Submit;
+export default Home;
