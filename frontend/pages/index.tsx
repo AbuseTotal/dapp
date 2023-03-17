@@ -74,8 +74,12 @@ function Submit() {
 
     connection.getAddress()
       .then((address) => {
-        const contract = new connection.Web3.eth.Contract(SubmissionContractABI as AbiItem[], "0xREPLACEME", { from: address });
-        contract.methods.submitURL(observable);
+        const contract = new connection.Web3.eth.Contract(
+          SubmissionContractABI as AbiItem[],
+          process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
+          { from: address },
+        );
+        contract.methods.submitURL(observable).send();
       });
   };
 
