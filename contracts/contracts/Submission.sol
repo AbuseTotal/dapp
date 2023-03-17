@@ -1,50 +1,53 @@
 pragma solidity ^0.8.0;
 
-contract Submission {
+import "./Bounty.sol";
+import "./Reputation.sol";
 
-    address payable public owner;
+contract Submission is Ownable {
+    Bounty private bountyContract;
+    Reputation private reputationContract;
 
-    uint reputationReward = 1 ether;
-    uint reportsCounter;
+    uint256 public submissionCount = 0;
+    Report[] public submissions;
 
-    mapping(address => uint) public reputations;
-    mapping(string => Report) public reports;
+    event URLSubmitted(uint256 indexed submissionId, address indexed reporter, string url);
+    event SubmissionReviewed(uint256 indexed submissionId, address indexed reporter, uint256 bountyAmount, uint256 reputationAmount);
 
     struct Report {
         address reporter;
         string url;
-        uint bounty;
+        bool reviewed;
     }
 
-    event URLSubmitted(Report report);  
-
-    constructor() payable {
-        owner = payable(msg.sender);
+    constructor(address _bountyContract, address _reputationContract) {
+        bountyContract = Bounty(_bountyContract);
+        reputationContract = Reputation(_reputationContract);
     }
 
-    function submitUrl(string calldata url) external {
-        //TODO: check errors
-        reports[url] = Report({ reporter: msg.sender, url: url, bounty: 0 });
-        reputations[msg.sender] += reputationReward;
-        emit URLSubmitted(reports[url]);
+    function submitURL(string memory _url) public {
+        submissions.push(Report({
+            reporter: msg.sender,
+            url: _url,
+            reviewed: false
+        }));
+        emit URLSubmitted(submissionCount, msg.sender, _url);
+        submissionCount++;
     }
 
-    function getReport(string calldata url) public view returns (Report memory) {
-        return reports[url];
+    function reviewSubmission(uint256 _submissionId, uint256 _bountyAmount, uint256 _reputationAmount) public onlyOwner {
+        require(_submissionId < submissionCount, "Submission: invalid submission ID");
+        Report storage submission = submissions[_submissionId];
+        require(!submission.reviewed, "Submission: submission already reviewed");
+
+        if (_bountyAmount > 0) {
+            bountyContract.submitBounty(submission.reporter, _bountyAmount);
+        }
+
+        if (_reputationAmount > 0) {
+            reputationContract.updateReputation(submission.reporter, _reputationAmount);
+        }
+
+        submission.reviewed = true;
+        emit SubmissionReviewed(_submissionId, submission.reporter, _bountyAmount, _reputationAmount);
     }
-
-    function getReputation(address account) public view returns (uint) {
-        return reputations[account];
-    }
-}
-
-contract Bounty {
-
-    Submission submissionContract;
-
-    function createBounty(string calldata url, uint bountyValue) public payable {
-        submissionContract.reports[url]
-        .bounty += bountyValue;
-    }
-
 }
