@@ -39,9 +39,9 @@ contract Submission is Ownable {
         Report storage submission = submissions[_submissionId];
         require(!submission.reviewed, "Submission: submission already reviewed");
 
-        if (_bountyAmount > 0) {
-            bountyContract.submitBounty(submission.reporter, _bountyAmount);
-        }
+        // if (_bountyAmount > 0) {
+        //     bountyContract.submitBounty(submission.reporter, _bountyAmount);
+        // }
 
         if (_reputationAmount > 0) {
             reputationContract.updateReputation(submission.reporter, _reputationAmount);

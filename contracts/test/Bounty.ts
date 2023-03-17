@@ -10,6 +10,8 @@ describe("Bounty", function () {
   let addr2: SignerWithAddress;
   let addrs: SignerWithAddress[];
 
+  const userId = "0x12299cf17bce646d304b722dd2d11f2e843d763072c1be711f54b73bdbf69862"
+
   beforeEach(async function () {
     const BountyFactory = await ethers.getContractFactory("Bounty");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
@@ -30,7 +32,7 @@ describe("Bounty", function () {
   it("Should revert when a non-owner tries to claim a bounty", async function () {
     await bounty.submitBounty(addr1.address, 1000);
     await expect(
-      bounty.connect(addr2).claimBounty(addr1.address)
+      bounty.connect(addr2).claimBounty(addr1.address, userId)
     ).to.be.revertedWith("Bounty: caller is not eligible to claim the bounty");
   });
 
@@ -38,8 +40,8 @@ describe("Bounty", function () {
     await bounty.submitBounty(addr1.address, 1000);
     await bounty.submitBounty(addr2.address, 2000);
 
-    await bounty.connect(addr1).claimBounty(addr1.address);
-    await bounty.connect(addr2).claimBounty(addr2.address);
+    await bounty.connect(addr1).claimBounty(addr1.address, userId);
+    await bounty.connect(addr2).claimBounty(addr2.address, userId);
 
     const addr1Balance = await bounty.balanceOf(addr1.address);
     const addr2Balance = await bounty.balanceOf(addr2.address);
@@ -49,7 +51,7 @@ describe("Bounty", function () {
   });
 
   it("Should revert when claiming an invalid bounty", async function () {
-    await expect(bounty.claimBounty(addr1.address)).to.be.revertedWith(
+    await expect(bounty.claimBounty(addr1.address, userId)).to.be.revertedWith(
       "Bounty: no bounty available for the specified address"
     );
   });
