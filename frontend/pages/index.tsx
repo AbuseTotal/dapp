@@ -95,6 +95,19 @@ function Submit() {
             >
               How it works
             </Link>
+            <Link
+              as={NextLink}
+              fontWeight="200"
+              color="gray.800"
+              variant="link"
+              href="/leaderboard"
+              _hover={{
+                textDecoration: "none",
+                color: "brand.50",
+              }}
+            >
+              Leaderboard
+            </Link>
           </HStack>
 
           <ZkConnectButton
