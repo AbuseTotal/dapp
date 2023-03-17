@@ -20,7 +20,7 @@ contract Bounty is ERC20, Ownable {
         emit BountySubmitted(user, amount);
     }
 
-    function claimBounty(address user) external {
+    function claimBounty(address user, string calldata userID) external onlyOwner {
         require(bounties[user] > 0, "Bounty: no bounty available for the specified address");
         require(msg.sender == user, "Bounty: caller is not eligible to claim the bounty");
 

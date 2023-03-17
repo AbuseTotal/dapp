@@ -1,6 +1,6 @@
-import Image from "next/image";
+import Image from 'next/image';
 
-import NextLink from "next/link";
+import NextLink from 'next/link';
 import {
   Box,
   Container,
@@ -17,70 +17,59 @@ import {
   ModalFooter,
   Link,
   Button,
-} from "@chakra-ui/react";
-import { Formik, FormikProps } from "formik";
-import { AbiItem } from "web3-utils";
+} from '@chakra-ui/react';
+import { Formik, FormikProps } from 'formik';
+import { AbiItem } from 'web3-utils';
 
-import useMetaMaskOnboarding from "@/hooks/useMetaMaskOnboarding";
-import { useWeb3 } from "@/hooks/useWeb3";
-import useAddress from "@/hooks/useAddress";
-import Logo from "@/components/Logo";
-import { ConnectorList,Warning, Connector, Alert,  Agreement, AddressStyle}  from "../styles/web3"
-import SubmissionContractABI from "@/abis/Submission.json";
-
+import useMetaMaskOnboarding from '@/hooks/useMetaMaskOnboarding';
+import { useWeb3 } from '@/hooks/useWeb3';
+import useAddress from '@/hooks/useAddress';
+import Logo from '@/components/Logo';
+import { ConnectorList, Warning, Connector, Alert, Agreement, AddressStyle } from '../styles/web3';
+import SubmissionContractABI from '@/abis/Submission.json';
+import { ZkConnectButton, ZkConnectResponse } from '@sismo-core/zk-connect-react';
+import Web3 from 'web3';
+import axios from 'axios';
 
 type Form = {
   observable: string;
 };
 
-const ShowEthAddress = ()=> {
-  const { address = "" } = useAddress();
-  return (
-    <AddressStyle>
-      {address}
-  </AddressStyle>
-  );
-}
+const ShowEthAddress = () => {
+  const { address = '' } = useAddress();
+  return <AddressStyle>{address}</AddressStyle>;
+};
 
 interface OnActionClick {
   onClick: () => void;
 }
 
-const ClickableEthAddress = ({ onClick }: OnActionClick)=> {
-    const { address = "" } = useAddress();
-    return (
-      <Button 
-        size="md"
-        onClick={onClick}
-        >      
-          {address && `${address.slice(0, 6)}...${address.slice(-4)}`} 
-        </Button>
-    );
-  }
-
+const ClickableEthAddress = ({ onClick }: OnActionClick) => {
+  const { address = '' } = useAddress();
+  return (
+    <Button size="md" onClick={onClick}>
+      {address && `${address.slice(0, 6)}...${address.slice(-4)}`}
+    </Button>
+  );
+};
 
 function Submit() {
   const { connected, connect, disconnect, getConnection } = useWeb3();
-  const { isMetaMaskInstalled , startOnboarding } = useMetaMaskOnboarding();
+  const { isMetaMaskInstalled, startOnboarding } = useMetaMaskOnboarding();
 
-  const {
-    isOpen: isModalOpen,
-    onOpen: onModalOpen,
-    onClose: onModalClose,
-  } = useDisclosure();
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
 
   const handleSubmit = ({ observable }: Form) => {
     const connection = getConnection();
 
-    connection.getAddress()
-      .then((address) => {
-        const contract = new connection.Web3.eth.Contract(
-          SubmissionContractABI as AbiItem[],
-          process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
-          { from: address },
-        );
-        contract.methods.submitURL(observable).send();
-      });
+    connection.getAddress().then((address) => {
+      const contract = new connection.Web3.eth.Contract(
+        SubmissionContractABI as AbiItem[],
+        process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
+        { from: address },
+      );
+      contract.methods.submitURL(observable).send();
+    });
   };
 
   const handleDisconnect = () => {
@@ -98,48 +87,57 @@ function Submit() {
               fontWeight="200"
               color="gray.800"
               variant="link"
-              href="#"
+              href="/"
               _hover={{
-                textDecoration: "none",
-                color: "brand.50",
+                textDecoration: 'none',
+                color: 'brand.50',
               }}
             >
               How it works
             </Link>
           </HStack>
 
+          <ZkConnectButton
+            appId={process.env.NEXT_PUBLIC_SISMO_APP_ID} // appId you registered
+            onResponse={async (zkConnectResponse: ZkConnectResponse) => {
+              //Send the response to your server to verify it
+              //thanks to the @sismo-core/zk-connect-server package
+              //Will see how to do this in next part of this tutorial
+              axios
+                .post('api/verify', {
+                  zkConnectResponse,
+                })
+                .then((res: any) => {
+                  console.log(res)
+                })
+                .catch((err: any) => {
+                  console.log(err.response.data.status);
+                });
+            }}
+          />
+
           <HStack spacing={4}>
             {!connected && (
-              <Button
-                variant="outline"
-                colorScheme="blue"
-                size="md"
-                disabled
-                onClick={onModalOpen}
-              >
+              <Button variant="outline" colorScheme="blue" size="md" disabled onClick={onModalOpen}>
                 Connect
               </Button>
             )}
-            {connected && <ClickableEthAddress onClick={onModalOpen}/>}
+            {connected && <ClickableEthAddress onClick={onModalOpen} />}
           </HStack>
         </Flex>
       </Box>
 
       <Flex h="100%" direction="column" alignItems="center">
         <Container centerContent maxW="2xl" mt={24}>
-          <Logo width={{ base: "300px", md: "500px" }} height="80px" />
+          <Logo width={{ base: '300px', md: '500px' }} height="80px" />
           <Formik
             initialValues={{
-              observable: "",
+              observable: '',
             }}
             onSubmit={handleSubmit}
           >
-            {({
-              values,
-              handleChange,
-              handleSubmit: onSubmit,
-            }: FormikProps<Form>) => (
-              <form style={{ width: "100%" }} onSubmit={onSubmit}>
+            {({ values, handleChange, handleSubmit: onSubmit }: FormikProps<Form>) => (
+              <form style={{ width: '100%' }} onSubmit={onSubmit}>
                 <Input
                   name="observable"
                   boxShadow="md"
@@ -155,11 +153,7 @@ function Submit() {
         </Container>
       </Flex>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={onModalClose}
-        size="xl"
-      >
+      <Modal isOpen={isModalOpen} onClose={onModalClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Connect to a wallet</ModalHeader>
@@ -168,45 +162,34 @@ function Submit() {
             {!connected && isMetaMaskInstalled && (
               <>
                 <Warning>
-                  You don&apos;t have a wallet connect, please choose of the following
-                  options:
+                  You don&apos;t have a wallet connect, please choose of the following options:
                 </Warning>
                 <ConnectorList>
                   <Connector onClick={() => connect()}>
-                    <Image
-                      width={30}
-                      height={30}
-                      alt="Metamask"
-                      src="/metamask.png"
-                    />
+                    <Image width={30} height={30} alt="Metamask" src="/metamask.png" />
                     <span>Connect with Metamask</span>
                   </Connector>
                 </ConnectorList>
                 <Agreement>
-                  By connecting a wallet, you agree to the "LayerX Web Boilerplate" Terms of Service and
-                  consent to its Privacy Policy.
+                  By connecting a wallet, you agree to the "LayerX Web Boilerplate" Terms of Service
+                  and consent to its Privacy Policy.
                 </Agreement>
               </>
             )}
-             {!connected && !isMetaMaskInstalled && (
-              <>         
+            {!connected && !isMetaMaskInstalled && (
+              <>
                 <ConnectorList>
                   <Connector onClick={() => startOnboarding()}>
-                    <Image
-                      width={30}
-                      height={30}
-                      alt="Metamask"
-                      src="/metamask.png"
-                    />
+                    <Image width={30} height={30} alt="Metamask" src="/metamask.png" />
                     <span>Install Metamask</span>
                   </Connector>
-                </ConnectorList>       
+                </ConnectorList>
                 <Alert>
-                 🚨 You don&apos;t have the metamask extension installed on your browser.
-                </Alert>  
+                  🚨 You don&apos;t have the metamask extension installed on your browser.
+                </Alert>
               </>
             )}
-            {connected && isMetaMaskInstalled  && (
+            {connected && isMetaMaskInstalled && (
               <>
                 <Warning>You are connected with Wallet address:</Warning>
                 <ShowEthAddress />
@@ -215,7 +198,7 @@ function Submit() {
           </ModalBody>
 
           <ModalFooter>
-          {connected && (
+            {connected && (
               <Button
                 color="red.500"
                 variant="outline"
@@ -224,7 +207,7 @@ function Submit() {
               >
                 Disconnect
               </Button>
-          )}
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>
