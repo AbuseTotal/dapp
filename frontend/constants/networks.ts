@@ -1,5 +1,6 @@
 enum ChainName {
   LOCAL = "Local",
+  MANTLE = "Mamble",
   ETHEREUM = "Ethereum",
   RINKEBY = "Rinkeby",
   GOERLI = "Goerli",
@@ -9,6 +10,7 @@ enum ChainName {
 
 export enum ChainId {
   LOCAL = 31337,
+  MANTLE = 5001,
   ETHEREUM = 1, 
   RINKEBY = 4,
   GOERLI = 5,
@@ -32,6 +34,11 @@ export const chains: Chain[] = [
     id: ChainId.LOCAL,
     name: ChainName.LOCAL,
     rpc: "http://localhost:8545",
+  },
+  {
+    id: ChainId.MANTLE,
+    name: ChainName.MANTLE,
+    rpc: "https://rpc.testnet.mantle.xyz/",
   },
   {
     id: ChainId.GOERLI,

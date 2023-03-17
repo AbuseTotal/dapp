@@ -20,6 +20,10 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
       accounts: [...TESTING_ACCOUNTS],
     },
+    mantle: {
+      url: "https://rpc.testnet.mantle.xyz/",
+      accounts: [process.env.PRIVATE_KEY_MANTLE!],
+    },
     moonbase: {
       url: "https://rpc.api.moonbase.moonbeam.network",
     },

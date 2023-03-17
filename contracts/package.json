@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "compile": "npx hardhat compile",
+    "test:local": "npx hardhat test --network localhost",
     "deploy:local": "npx hardhat run --network localhost scripts/deploy.ts",
+    "deploy:mantle": "npx hardhat run --network mantle scripts/deploy.ts",
     "deploy:kovan": "npx hardhat run --network kovan scripts/deploy.ts",
     "deploy:ropsten": "npx hardhat run --network ropsten scripts/deploy.ts",
     "deploy:moonbase": "npx hardhat run --network moonbase scripts/deploy.ts",
