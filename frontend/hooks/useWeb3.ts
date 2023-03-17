@@ -1,3 +1,4 @@
+import {Web3Connection} from "@taikai/dappkit";
 import { useEffect, useState, useContext } from "react";
 import { DappkitProviderCtx } from "../context";
 import { IDappkitReactProvider } from "../lib/IDappkitReactProvider";
@@ -22,6 +23,10 @@ export const useWeb3 = () => {
     },
   };
 
+  const getConnection = (): Web3Connection => {
+    return dappkitProvider.getConnection();
+  }
+
   useEffect(() => {
     dappkitProvider.subscribe(reactor);
     return () => {
@@ -40,5 +45,6 @@ export const useWeb3 = () => {
     error,
     chainId,
     address,
+    getConnection,
   };
 };
