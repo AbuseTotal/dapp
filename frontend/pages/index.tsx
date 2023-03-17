@@ -21,7 +21,6 @@ import {
 } from '@chakra-ui/react';
 import { AbiItem } from 'web3-utils';
 import { Formik, FormikProps } from "formik";
-import axios from 'axios';
 
 import useMetaMaskOnboarding from "@/hooks/useMetaMaskOnboarding";
 import { useWeb3 } from "@/hooks/useWeb3";
@@ -31,7 +30,6 @@ import { ConnectorList,Warning, Connector, Alert,  Agreement, AddressStyle}  fro
 import SubmissionContractABI from "@/abis/Submission.json";
 import { EventData } from "web3-eth-contract";
 import SubmissionLiveFeed from "@/components/SubmissionLiveFeed";
-import {ZkConnectButton, ZkConnectResponse} from "@sismo-core/zk-connect-react";
 
 
 type Form = {
@@ -134,25 +132,6 @@ function Home() {
               Leaderboard
             </Link>
           </HStack>
-
-          <ZkConnectButton
-            appId={process.env.NEXT_PUBLIC_SISMO_APP_ID} // appId you registered
-            onResponse={async (zkConnectResponse: ZkConnectResponse) => {
-              //Send the response to your server to verify it
-              //thanks to the @sismo-core/zk-connect-server package
-              //Will see how to do this in next part of this tutorial
-              axios
-                .post('api/verify', {
-                  zkConnectResponse,
-                })
-                .then((res: any) => {
-                  console.log(res)
-                })
-                .catch((err: any) => {
-                  console.log(err.response.data.status);
-                });
-            }}
-          />
 
           <HStack spacing={4}>
             {!connected && (

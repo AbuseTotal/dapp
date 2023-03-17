@@ -22,14 +22,6 @@ import SubmissionContractABI from "@/abis/Submission.json";
 const getLockIcon = (locked: boolean) =>
   locked ? faLock : faUnlock;
 
-// type SubmissionLiveFeedProps = {
-//   data: {
-//     logIndex: number;
-//     address: string;
-//     url: string;
-//   }[];
-// };
-
 function SubmissionLiveFeed() {
   const { connected, connect, disconnect, getConnection } = useWeb3();
   const [submissionEvents, setSubmissionEvents] = useState<EventData[]>([]);
@@ -133,4 +125,3 @@ function SubmissionLiveFeed() {
 }
 
 export default SubmissionLiveFeed;
-export type { SubmissionLiveFeedProps };
