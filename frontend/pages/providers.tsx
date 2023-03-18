@@ -2,6 +2,7 @@ import NextLink from 'next/link';
 import { ZkConnectClientConfig, ZkConnectResponse } from '@sismo-core/zk-connect-react';
 import { ZkConnect } from '@sismo-core/zk-connect-client';
 import axios from 'axios';
+import nextBase64 from 'next-base64';
 
 import {
   Box,
@@ -124,7 +125,7 @@ function Providers() {
 
       <Divider mt={2} />
 
-      <Box mt={6}>
+      <Box pt={6} bgGradient='linear(to-r, cyan.50, gray.100, blue.50)' h="100%">
         {isAuthenticated === 0 && (
           <Box>
             <Center>
@@ -175,7 +176,7 @@ function Providers() {
                   <GridItem colSpan={2}></GridItem>
                 </SimpleGrid>
 
-                <Stack w="50vw" spacing="4" mt={2}>
+                <Stack w="50vw" spacing="2" mt={2}>
                   {getSubmissionsWithBounties().length > 0 &&
                     getSubmissionsWithBounties().map((submission) => (
                       <Card py={2} px={4} key={submission.url}>
@@ -199,7 +200,7 @@ function Providers() {
                               </Button>
                               <Button
                                 colorScheme="blue"
-                                onClick={() => router.push(`/takedowns/${submission.url}`)}
+                                onClick={() => router.push(`/takedowns/${nextBase64.encode(submission.url)}`)}
                               >
                                 Info
                               </Button>

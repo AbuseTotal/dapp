@@ -176,7 +176,7 @@ function Observable() {
           </NextLink>
         </Box>
 
-        <Connect connected={connected} connect={connect} disconnect={disconnect} />
+        <Connect connected={connected} connect={connect} disconnect={disconnect} getConnection={getConnection} />
       </Flex>
 
       <Divider mt={2} />

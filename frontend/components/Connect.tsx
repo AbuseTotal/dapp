@@ -17,11 +17,15 @@ import { ConnectorList,Warning, Connector, Alert,  Agreement, AddressStyle}  fro
 
 import useAddress from "@/hooks/useAddress";
 import useMetaMaskOnboarding from '@/hooks/useMetaMaskOnboarding';
+import {useEffect, useState} from "react";
+import {Web3Connection} from "@taikai/dappkit";
+import ReputationContractABI from "@/abis/Reputation.json";
 
 interface ConnectProps {
   connected: boolean;
   connect: () => void;
   disconnect: () => void;
+  getConnection: () => Web3Connection;
 }
 
 interface OnActionClick {
@@ -54,21 +58,40 @@ const ShowEthAddress = ()=> {
   );
 }
 
-function Connect({ connect, connected, disconnect }: ConnectProps) {
+function Connect({ connect, connected, disconnect, getConnection }: ConnectProps) {
   const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
   const { isMetaMaskInstalled, startOnboarding } = useMetaMaskOnboarding();
+  const [reputationBalance, setReputationBalance] = useState(0);
 
   const handleDisconnect = () => {
     disconnect();
     onModalClose();
   };
 
+  const getReputationBalance = () => {
+    const connection = getConnection();
+    const contract = new connection.Web3.eth.Contract(
+      ReputationContractABI as AbiItem[],
+      process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
+    );
+    contract.getPastEvents("ReputationUpdated", { fromBlock: 0 })
+      .then(events => {
+        console.log(events);
+        setReputationBalance(events[0]?.returnValues?.newReputation ?? 0);
+      });
+  };
+
+  useEffect(() => {
+    if (!connected) { return };
+    getReputationBalance()
+  }, [connected]);
+
   return (
     <Box>
       {connected && (
         <HStack>
           <Button variant="outline" colorScheme="green" size="md" disabled>
-            Reputation: 30k
+            Reputation: {reputationBalance}
           </Button>
           <ClickableEthAddress onClick={onModalOpen} />
         </HStack>
