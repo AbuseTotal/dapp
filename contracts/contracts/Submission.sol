@@ -11,13 +11,16 @@ contract Submission is Ownable {
     Report[] public submissions;
 
     event URLSubmitted(uint256 indexed submissionId, address indexed reporter, string url);
-    event SubmissionReviewed(uint256 indexed submissionId, address indexed reporter, uint256 bountyAmount, uint256 reputationAmount);
+    event SubmissionReviewed(uint256 indexed submissionId, address indexed reporter, address voter, uint256 upVotes, uint256 downVotes);
 
     struct Report {
         address reporter;
         string url;
-        bool reviewed;
+        uint256 upVotes;
+        uint256 downVotes;
+        address[] voters;
     }
+
 
     constructor(address _bountyContract, address _reputationContract) {
         bountyContract = Bounty(_bountyContract);
@@ -34,20 +37,19 @@ contract Submission is Ownable {
         submissionCount++;
     }
 
-    function reviewSubmission(uint256 _submissionId, uint256 _bountyAmount, uint256 _reputationAmount) public onlyOwner {
+    function reviewSubmission(uint256 _submissionId, bool _malicious) public onlyOwner {
         require(_submissionId < submissionCount, "Submission: invalid submission ID");
         Report storage submission = submissions[_submissionId];
         require(!submission.reviewed, "Submission: submission already reviewed");
 
-        // if (_bountyAmount > 0) {
-        //     bountyContract.submitBounty(submission.reporter, _bountyAmount);
-        // }
-
-        if (_reputationAmount > 0) {
-            reputationContract.updateReputation(submission.reporter, _reputationAmount);
+        require(msg.sender != reporter, "Reporter can't vote in he's report");
+        //TODO: voters can only vote one time (msg.sender != voters[i])
+        if (_malicious) {
+            submission[downVotes]++;
+        } else {
+            submission[upVotes]++;
         }
 
-        submission.reviewed = true;
-        emit SubmissionReviewed(_submissionId, submission.reporter, _bountyAmount, _reputationAmount);
+        emit SubmissionReviewed(_submissionId, submission.reporter, msg.sender, upVotes, downVotes);
     }
 }
