@@ -23,6 +23,8 @@ import { faLink } from '@fortawesome/free-solid-svg-icons'
 import BountyTime from "@/components/BountyTime";
 import GenericInfoCard from "@/components/GenericInfoCard";
 import Logo from "@/components/Logo";
+import Connect from "@/components/Connect";
+import { useWeb3 } from "@/hooks/useWeb3";
 
 const scans = {
   title: "Latest scan",
@@ -113,20 +115,28 @@ const bounties = [
 ];
 
 function Takedown() {
+  const { connected, connect, disconnect, getConnection } = useWeb3();
+
   const futureDate = new Date();
   futureDate.setDate(futureDate.getDate() + 3);
 
 
   const isMobile = useBreakpointValue({ base: true, md: false });
   return (
-    <Flex pt={2} px={4} direction="column" h="100vh">
-      <NextLink href="/">
-        <Logo width="150px" height="45px" />
-      </NextLink>
+    <Flex pt={2} direction="column" h="100vh">
+      <Flex mx={4} justifyContent="space-between">
+        <Box>
+          <NextLink href="/">
+            <Logo width="150px" height="45px" />
+          </NextLink>
+        </Box>
+
+        <Connect connected={connected} connect={connect} disconnect={disconnect} />
+      </Flex>
 
       <Divider mt={2} />
 
-      <Box mt={6} px={6}>
+      <Box pt={6} px={10} bgGradient='linear(to-r, cyan.50, gray.100, blue.50)' h="100%">
         <SimpleGrid
           columns={12}
           gap={4}
@@ -136,7 +146,7 @@ function Takedown() {
           <GridItem colSpan={{ base: 12, lg: 8 }} h="100%">
             <Flex
               h="100%"
-              bg="bg-surface"
+              bg="white"
               px={{ base: "4", md: "6" }}
               py="5"
               boxShadow="sm"
@@ -179,7 +189,7 @@ function Takedown() {
 
           <GridItem colSpan={{ base: 12, lg: 4 }}>
             <Box
-              bg="bg-surface"
+              bg="white"
               px={{ base: "4", md: "6" }}
               py="5"
               boxShadow="sm"

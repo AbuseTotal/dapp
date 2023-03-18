@@ -19,6 +19,7 @@ import ReputationContractABI from "@/abis/Reputation.json";
 import { useWeb3 } from "@/hooks/useWeb3";
 import Logo from "@/components/Logo";
 import {useRouter} from "next/router";
+import Connect from "@/components/Connect";
 
 interface Member {
   logIndex: number;
@@ -72,14 +73,20 @@ function Leaderboard() {
   }, [getConnection, connected])
 
   return (
-    <Flex pt={2} px={4} direction="column" h="100vh">
-      <NextLink href="/">
-        <Logo width="150px" height="45px" />
-      </NextLink>
+    <Flex pt={2} direction="column" h="100vh">
+      <Flex mx={4} justifyContent="space-between">
+        <Box>
+          <NextLink href="/">
+            <Logo width="150px" height="45px" />
+          </NextLink>
+        </Box>
+
+        <Connect connected={connected} connect={connect} disconnect={disconnect} />
+      </Flex>
 
       <Divider mt={2} />
 
-      <Box mt={6}>
+      <Box h="100%" pt={6} px={4} bgGradient='linear(to-r, cyan.50, gray.100, blue.50)'>
         <Box>
           <Center>
             <Flex direction="column" mb={2}>
