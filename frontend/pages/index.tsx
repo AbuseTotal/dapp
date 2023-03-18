@@ -81,7 +81,7 @@ function Home() {
           </HStack>
 
           <HStack spacing={4}>
-            <Connect connected={connected} connect={connect} disconnect={disconnect} />
+            <Connect connected={connected} connect={connect} disconnect={disconnect} getConnection={getConnection} />
           </HStack>
         </Flex>
       </Box>
