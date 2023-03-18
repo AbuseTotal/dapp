@@ -12,6 +12,7 @@ contract Submission is Ownable {
 
     event URLSubmitted(uint256 indexed submissionId, address indexed reporter, string url);
     event SubmissionReviewed(uint256 indexed submissionId, address indexed reporter, address voter, uint256 upVotes, uint256 downVotes);
+    event SubmissionFinished(uint256 indexed submissionId, string url);
 
     struct Report {
         address reporter;
@@ -41,7 +42,7 @@ contract Submission is Ownable {
         submissionCount++;
     }
 
-    function reviewSubmission(uint256 _submissionId, bool _malicious) public onlyOwner {
+    function reviewSubmission(uint256 _submissionId, bool _malicious) public {
         require(_submissionId < submissionCount, "Submission: invalid submission ID");
         Report storage submission = submissions[_submissionId];
         require(!submission.reviewed, "Submission: submission already reviewed");
@@ -57,5 +58,13 @@ contract Submission is Ownable {
         submission.voters.push(msg.sender);
 
         emit SubmissionReviewed(_submissionId, submission.reporter, msg.sender, submission.upVotes, submission.downVotes);
+    }
+
+    function setSubmissionReviewed(uint256 _submissionId) public {
+        require(submissions[_submissionId], "Submission does not exist");
+        Report storage submission = submissions[_submissionId];
+        submission.reviewed = true;
+        
+        emit SubmissionFinished(_submissionId, submission.url)
     }
 }
