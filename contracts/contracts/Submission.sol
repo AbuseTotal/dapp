@@ -10,7 +10,7 @@ contract Submission is Ownable {
     uint256 public submissionCount = 0;
     Report[] public submissions;
 
-    event URLSubmitted(uint256 indexed submissionId, address indexed reporter, string url);
+    event URLSubmitted(string indexed submissionUrl, address indexed reporter, string url);
     event SubmissionReviewed(uint256 indexed submissionId, address indexed reporter, address voter, uint256 upVotes, uint256 downVotes);
     event SubmissionFinished(uint256 indexed submissionId, string url);
 
@@ -45,7 +45,7 @@ contract Submission is Ownable {
         Report storage submission = submissions[_submissionId];
         require(!submission.reviewed, "Submission: submission already reviewed");
         require(msg.sender != submission.reporter, "Reporter can't vote in he's report");
-        
+
         if (_malicious) {
             submission.downVotes++;
         } else {
@@ -54,7 +54,7 @@ contract Submission is Ownable {
 
         submissionCount++;
 
-        emit SubmissionReviewed(_submissionId, submission.reporter, msg.sender, submission.upVotes, submission.downVotes);
+        emit SubmissionReviewed(submission.url, submission.reporter, msg.sender, submission.upVotes, submission.downVotes);
     }
 
     function setSubmissionReviewed(uint256 _submissionId) public {
