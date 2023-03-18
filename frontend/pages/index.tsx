@@ -168,9 +168,12 @@ function Home() {
             )}
           </Formik>
         </Container>
-        <Box mt={12}>
-          <SubmissionLiveFeed />
-        </Box>
+
+        {connected && (
+          <Box mt={12}>
+            <SubmissionLiveFeed />
+          </Box>
+        )}
       </Flex>
 
       <Modal isOpen={isModalOpen} onClose={onModalClose} size="xl">
