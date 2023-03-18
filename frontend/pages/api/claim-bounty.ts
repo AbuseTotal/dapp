@@ -13,18 +13,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     process.env.NEXT_PUBLIC_BOUNTY_CONTRACT_ADDRESS,
   );
 
-  const account0 = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
-  const account2 = '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'
-
+  
   bountyContract.methods
-    .claimBounty(account2, userId)
-    .send({ from: account0 })//, function (err: any, res: any) {
-    //   if (err) {
-    //     console.log('An error occurred', err);
-    //     return;
-    //   }
-    //   console.log('Hash of the transaction: ' + res);
-    // });
+    .claimBounty(submittedAdress, userId)
+    .send({ from: process.env.NEXT_PUBLIC_OWNER })
 
     res.status(200).send({})
 }
