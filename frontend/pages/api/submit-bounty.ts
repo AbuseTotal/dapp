@@ -14,10 +14,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   );
 
   const account0 = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
-  const account2 = '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC'
+
+  console.log(bountyContract.methods)
 
   bountyContract.methods
-    .claimBounty(account2, userId)
+    .submitBounty(1000, userId)
     .send({ from: account0 })//, function (err: any, res: any) {
     //   if (err) {
     //     console.log('An error occurred', err);
