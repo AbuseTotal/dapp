@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import nextBase64 from "next-base64";
+
 
 import NextLink from 'next/link';
 import {
@@ -30,6 +32,7 @@ import { ConnectorList,Warning, Connector, Alert,  Agreement, AddressStyle}  fro
 import SubmissionContractABI from "@/abis/Submission.json";
 import { EventData } from "web3-eth-contract";
 import SubmissionLiveFeed from "@/components/SubmissionLiveFeed";
+import {useRouter} from "next/router";
 
 
 type Form = {
@@ -65,6 +68,7 @@ const ClickableEthAddress = ({ onClick }: OnActionClick)=> {
   }
 
 function Home() {
+  const router = useRouter();
   const { connected, connect, disconnect, getConnection } = useWeb3();
   const { isMetaMaskInstalled, startOnboarding } = useMetaMaskOnboarding();
   const [pastEvents, setPastEvents] = useState<EventData[]>();
@@ -80,7 +84,12 @@ function Home() {
         process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
         { from: address },
       );
-      contract.methods.submitURL(observable).send();
+      contract.methods.submitURL(observable)
+        .send()
+        .then(() => {
+          const base64Encoded = nextBase64.encode(observable);
+          router.push(`/observables/${base64Encoded}`);
+        });
     });
   };
 

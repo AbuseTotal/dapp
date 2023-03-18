@@ -126,26 +126,26 @@ function ListCard({
 
       <CardBody py={py} px={px}>
         <Stack divider={<StackDivider />} spacing="2">
-          {Object.entries(data).map(([key, value]) => (
-            <Flex key={key} justify="space-between">
+          {Object.entries(data).map(([key, value], index) => (
+            <Flex key={index} justify="space-between">
               <Text fontSize="sm" textAlign={{ base: "left", sm: "end" }}>
                 {value.title}
               </Text>
               <Stack direction="row">
                 {Array.isArray(value.data) ? (
-                  value.data.map((content, index) => (
+                  value.data.map((content, idx) => (
                     <BadgeComponent
-                      key={value.title}
+                      key={`${value.title}-${idx}`}
                       colorScheme={value.colorScheme}
                       variant={value.variant}
-                      data={value.data[index]}
+                      data={value.data[idx]}
                       copy={value.copy}
                       onCopy={() => setClipboard(content)}
                     />
                   ))
                 ) : (
                   <BadgeComponent
-                    key={value.title}
+                    key={`${value.title}-${index}`}
                     colorScheme={value.colorScheme}
                     variant={value.variant}
                     data={value.data}

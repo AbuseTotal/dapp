@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { AnimatePresence, motion } from "framer-motion";
 import { AbiItem } from "web3-utils";
+import nextBase64 from 'next-base64';
+import NextLink from "next/link";
 
 import {
   Card,
@@ -11,7 +14,7 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock, faUnlock, faGlobe, faQrcode, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faLock, faUnlock, faGlobe, faQrcode, faUser, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
 import { EventData } from "web3-eth-contract";
 
@@ -23,6 +26,7 @@ const getLockIcon = (locked: boolean) =>
   locked ? faLock : faUnlock;
 
 function SubmissionLiveFeed() {
+  const router = useRouter();
   const { connected, connect, disconnect, getConnection } = useWeb3();
   const [submissionEvents, setSubmissionEvents] = useState<EventData[]>([]);
   const connection = getConnection();
@@ -51,7 +55,7 @@ function SubmissionLiveFeed() {
             <FontAwesomeIcon icon={faLock} />
           </Box>
         </GridItem>
-        <GridItem colSpan={2}>
+        <GridItem colSpan={1}>
           <HStack spacing={2} verticalAlign="middle">
             <Box display={{ base: "hidden", md: "block" }}>
               <FontAwesomeIcon icon={faUser} />
@@ -59,7 +63,7 @@ function SubmissionLiveFeed() {
             <Text>User</Text>
           </HStack>
         </GridItem>
-        <GridItem colSpan={7}>
+        <GridItem colSpan={5}>
           <HStack spacing={2} verticalAlign="middle">
             <Box display={{ base: "hidden", md: "block" }}>
               <FontAwesomeIcon icon={faQrcode} />
@@ -79,7 +83,7 @@ function SubmissionLiveFeed() {
       <AnimatePresence initial={false}>
         {submissionEvents.map((event) => (
           <Card
-            key={event.signature}
+            key={event.transactionHash}
             as={motion.div}
             layout
             initial={{ opacity: 0, y: 0, scale: 0.95 }}
@@ -107,14 +111,19 @@ function SubmissionLiveFeed() {
                   color={event.returnValues.url.startsWith("https://") ? "green" : "red"}
                 />
               </GridItem>
-              <GridItem colSpan={2}>
+              <GridItem colSpan={1}>
                 Unknown
               </GridItem>
-              <GridItem colSpan={7}>
+              <GridItem colSpan={5}>
                 {event.address}
               </GridItem>
-              <GridItem colSpan={2}>
-                {event.returnValues.url}
+              <GridItem colSpan={3} display="flex" justifyContent="space-between">
+                <Text w="fit-content">
+                  {event.returnValues.url}
+                </Text>
+                <NextLink href={`/observables/${nextBase64.encode(event.returnValues.url)}`}>
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </NextLink>
               </GridItem>
             </SimpleGrid>
           </Card>

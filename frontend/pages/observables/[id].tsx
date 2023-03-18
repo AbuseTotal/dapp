@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import nextBase64 from "next-base64";
+
 import NextLink from "next/link";
 import {
   Box,
@@ -23,6 +27,11 @@ import { faLink, faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-ic
 
 import GenericInfoCard from "@/components/GenericInfoCard";
 import Logo from "@/components/Logo";
+import SubmissionContractABI from "@/abis/Submission.json";
+import { useWeb3 } from "@/hooks/useWeb3";
+import { AbiItem } from 'web3-utils';
+import { EventData } from "web3-eth-contract";
+
 
 const scans = {
   title: "Latest scan",
@@ -99,28 +108,37 @@ const timer = {
   title: "Time Remaining",
 };
 
-const votes = [
- {
-  id: 1,
-  address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  malicious: true,
- },
- {
-  id: 2,
-  address: "0xB6d2CCB1c17246CB025843f0E7d658Ead8345305",
-  malicious: false,
- },
- {
-  id: 2,
-  address: "0x6b17dabdc7f96689c6052CcAB3De975B9AD532d3",
-  malicious: false,
- },
-];
-
 function Observable() {
+  const router = useRouter();
+  const [url, setURL] = useState<string>("");
+  const { connected, connect, disconnect, getConnection } = useWeb3();
+  const [votes, setVotes] = useState<EventData[]>([]);
+
   const futureDate = new Date();
   futureDate.setDate(futureDate.getDate() + 3);
 
+  const getVotes = () => {
+    const connection = getConnection();
+    const contract = new connection.Web3.eth.Contract(
+      SubmissionContractABI as AbiItem[],
+      process.env.NEXT_PUBLIC_SUBMISSION_CONTRACT_ADDRESS,
+    );
+    contract.getPastEvents("SubmissionReviewed", { fromBlock: 0 }).then(events => setVotes(events));
+  };
+
+  useEffect(() => {
+    const { id } = router.query;
+    if (!id) { return };
+
+    const base64decoded = nextBase64.decode(id as string);
+    setURL(base64decoded);
+  }, [router.query])
+
+
+  useEffect(() => {
+    if (!connected) { return };
+    getVotes();
+  }, [connected]);
 
   const isMobile = useBreakpointValue({ base: true, md: false });
   return (
@@ -175,7 +193,7 @@ function Observable() {
                   placement="right"
                   borderRadius="10px"
                 >
-                  <Text fontWeight="medium">https://google.com</Text>
+                  <Text fontWeight="medium">{url}</Text>
                 </Tooltip>
               </Stack>
             </Flex>
@@ -214,15 +232,15 @@ function Observable() {
               <CardBody>
                 <VStack divider={<Divider />}>
                   {votes.map(bounty => (
-                    <SimpleGrid w="100%" key={bounty.id} columns={12}>
+                    <SimpleGrid w="100%" key={bounty.transactionHash} columns={12}>
                       <GridItem colSpan={6}>
-                        {bounty.address}
+                        {bounty.returnValues.reporter}
                       </GridItem>
                       <GridItem colSpan={4} display="flex" justifyContent="center">
                         <Text fontWeight="semibold">
                           <FontAwesomeIcon
-                            icon={bounty.malicious ? faThumbsDown : faThumbsUp}
-                            color={bounty.malicious ? "red" : "green"}
+                            icon={bounty.returnValues.malicious ? faThumbsDown : faThumbsUp}
+                            color={bounty.returnValues.malicious ? "red" : "green"}
                           />
                         </Text>
                       </GridItem>
