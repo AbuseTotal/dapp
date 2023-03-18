@@ -19,6 +19,7 @@ contract Submission is Ownable {
         uint256 upVotes;
         uint256 downVotes;
         address[] voters;
+        bool reviewed;
     }
 
 
@@ -31,7 +32,10 @@ contract Submission is Ownable {
         submissions.push(Report({
             reporter: msg.sender,
             url: _url,
-            reviewed: false
+            reviewed: false,
+            upVotes: 0,
+            downVotes: 0,
+            voters: new address[](50)
         }));
         emit URLSubmitted(submissionCount, msg.sender, _url);
         submissionCount++;
@@ -42,14 +46,16 @@ contract Submission is Ownable {
         Report storage submission = submissions[_submissionId];
         require(!submission.reviewed, "Submission: submission already reviewed");
 
-        require(msg.sender != reporter, "Reporter can't vote in he's report");
+        require(msg.sender != submission.reporter, "Reporter can't vote in he's report");
         //TODO: voters can only vote one time (msg.sender != voters[i])
         if (_malicious) {
-            submission[downVotes]++;
+            submission.downVotes++;
         } else {
-            submission[upVotes]++;
+            submission.upVotes++;
         }
 
-        emit SubmissionReviewed(_submissionId, submission.reporter, msg.sender, upVotes, downVotes);
+        submission.voters.push(msg.sender);
+
+        emit SubmissionReviewed(_submissionId, submission.reporter, msg.sender, submission.upVotes, submission.downVotes);
     }
 }
